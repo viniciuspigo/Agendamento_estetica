@@ -37,7 +37,7 @@ function LoginForm() {
 
           {/* Login with Others */}
           <div className="flex items-center my-6 w-full">
-            <RegisterLoginSeparator />
+            <RegisterLoginSeparator text="Login"/>
           </div>
 
           {/* Login with Google */}
