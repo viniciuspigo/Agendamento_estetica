@@ -1,19 +1,18 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import LoginForm from "./components/LoginForm.jsx"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-const router = createBrowserRouter([
-  {
-    path: '/login',
-    element: <LoginForm />
-  },
-  {
-    path: '/',
-    element: <LoginForm />
-  }
-])
+// Providers (simulados ou a serem implementados)
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage"
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/cadastro" element={<RegisterPage />} />
+        </Routes>
+    </Router>
+  );
 }
 
 export default App;
