@@ -10,6 +10,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/cadastro" element={<RegisterPage />} />
+          <Route path="/pagina-inicial" />
         </Routes>
     </Router>
   );

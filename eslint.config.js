@@ -1,11 +1,23 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
   globalIgnores(['dist']),
+
+  // 🎯 BACKEND (Node.js)
+  {
+    files: ['backend/**/*.js'], // ou ajuste conforme sua estrutura
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      globals: globals.node, // <- Aqui o suporte ao process, __dirname, etc
+    },
+  },
+
+  // 🎯 FRONTEND (React)
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -26,4 +38,4 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
-])
+]);
