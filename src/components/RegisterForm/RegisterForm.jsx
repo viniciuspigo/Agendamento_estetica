@@ -8,11 +8,15 @@ import RegisterLoginPrompt from "../RegisterLoginForm/RegisterLoginPrompt";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-/* import { supabase } from "../../../backend/config/supabase"; */
+import { toast } from "sonner";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z
   .object({
-    name: z.string().min(3, { message: "O Nome deve ter pelo menos 3 caracteres" }),
+    name: z
+      .string()
+      .min(3, { message: "O Nome deve ter pelo menos 3 caracteres" }),
     email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
     password: z
       .string()
@@ -27,6 +31,8 @@ const formSchema = z
   });
 
 function RegisterForm() {
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -34,21 +40,46 @@ function RegisterForm() {
     reset,
   } = useForm({ resolver: zodResolver(formSchema) });
 
-  const onSubmit = (response) => {
- /*    const { data, error } = supabase.auth.signUp({
-      email: response.email,
-      password: response.password,
-      options: {
-        data: {display_name: response.name}
-      },
-    });
-    if (error) {
-      console.error(`OLHA O ERRO AQUI ${error}`);
-    } else {
-      console.log("Deu tudo certo", data);
-    } */
-    console.log("Informações do Usuário", response)
-    reset();
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/users/register-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            password: data.password,
+          }),
+        }
+      );
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        toast.success("Cadastro realizado com sucesso!");
+        reset();
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      } else {
+        console.error(
+          "Erro no cadastro: ",
+          responseData.message || "Erro ao cadastrar usuário"
+        );
+        toast.error("Erro ao realizar cadastro!");
+      }
+    } catch (error) {
+      console.log("Erro ao conectar no Servidor: ", error);
+      toast.error("Erro ao conectar no Servidor.");
+    } finally {
+      setLoading(false);
+    }
+    console.log("Informações do Usuário", data);
   };
 
   return (
@@ -69,62 +100,78 @@ function RegisterForm() {
           <div className="w-[364px] flex flex-col">
             <div className="flex flex-col gap-4 w-full">
               {/* Input de Nome com Ícone */}
-              <RegisterLoginInput
-                icon={IconUser}
-                id="name"
-                type="name"
-                {...register("name")}
-                placeholder="Nome Completo"
-              />
-              {name.email && (
-                <p className="text-red-500 text-sm">{errors.name.message}</p>
-              )}
+              <div className="flex flex-col gap-1">
+                <RegisterLoginInput
+                  icon={IconUser}
+                  id="name"
+                  type="name"
+                  {...register("name")}
+                  placeholder="Nome Completo"
+                />
+                {errors.name && (
+                  <p className="text-(--errors-message) text-xs">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
 
               {/* Input de Email com Ícone */}
-              <RegisterLoginInput
-                icon={IconMail}
-                id="email"
-                type="email"
-                {...register("email")}
-                placeholder="Email"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
+              <div className="flex flex-col gap-1">
+                <RegisterLoginInput
+                  icon={IconMail}
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  placeholder="Email"
+                />
+                {errors.email && (
+                  <p className="text-(--errors-message) text-xs">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
 
               {/* Input de Senha com Ícone */}
-              <RegisterLoginInput
-                icon={IconLock}
-                id="password"
-                type="password"
-                {...register("password")}
-                placeholder="Senha"
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm">
-                  {errors.password.message}
-                </p>
-              )}
+              <div className="flex flex-col gap-1">
+                <RegisterLoginInput
+                  icon={IconLock}
+                  id="password"
+                  type="password"
+                  {...register("password")}
+                  placeholder="Senha"
+                />
+                {errors.password && (
+                  <p className="text-(--errors-message) text-xs">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
 
               {/* Input de Confirmar Senha com Ícone */}
-              <RegisterLoginInput
-                icon={IconLock}
-                id="passwordConfirmation"
-                type="password"
-                {...register("passwordConfirmation")}
-                placeholder="Confirmar Senha"
-              />
-              {errors.passwordConfirmation && (
-                <p className="text-red-500 text-sm">
-                  {errors.passwordConfirmation.message}
-                </p>
-              )}
+              <div className="flex flex-col gap-1">
+                <RegisterLoginInput
+                  icon={IconLock}
+                  id="passwordConfirmation"
+                  type="password"
+                  {...register("passwordConfirmation")}
+                  placeholder="Confirmar Senha"
+                />
+                {errors.passwordConfirmation && (
+                  <p className="text-(--errors-message) text-xs">
+                    {errors.passwordConfirmation.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Botão de Registro */}
           <div className="mt-7">
-            <RegisterLoginButton text="Cadastrar-se" type="submit" />
+            <RegisterLoginButton
+              text="Cadastrar-se"
+              type="submit"
+              disabled={loading}
+            />
           </div>
 
           {/* Login with Others */}

@@ -9,11 +9,11 @@ export default defineConfig([
 
   // 🎯 BACKEND (Node.js)
   {
-    files: ['backend/**/*.js'], // ou ajuste conforme sua estrutura
+    files: ['backend/**/*.js'],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: 'module',
-      globals: globals.node, // <- Aqui o suporte ao process, __dirname, etc
+      globals: globals.node,
     },
   },
 
